@@ -24,37 +24,39 @@ import javax.ws.rs.core.Response;
 public class MovieResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
-                "pu",
-                "jdbc:mysql://localhost:3307/startcode",
-                "dev",
-                "ax2",
-                EMF_Creator.Strategy.CREATE);
-    private static final MovieFacade FACADE =  MovieFacade.getMovieFacade(EMF);
+            "pu",
+            "jdbc:mysql://localhost:3307/startcode",
+            "dev",
+            "ax2",
+            EMF_Creator.Strategy.CREATE);
+    private static final MovieFacade FACADE = MovieFacade.getMovieFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-            
+
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String demo() {
         return "{\"msg\":\"Hello World\"}";
     }
+
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getMovieCount() {
         long count = FACADE.getMovieCount();
         //System.out.println("--------------->"+count);
-        return "{\"count\":"+count+"}";  //Done manually so no need for a DTO
+        return "{\"count\":" + count + "}";  //Done manually so no need for a DTO
     }
-        @Path("all")
+
+    @Path("all")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllMovies() {
         List<Movie> movies = new ArrayList(FACADE.allMovie());
-        
+
         return Response.ok().entity(GSON.toJson(movies)).build();  //Done manually so no need for a DTO
     }
-    
-        @Path("create")
+
+    @Path("create")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response createMovies() {
@@ -68,31 +70,33 @@ public class MovieResource {
         } finally {
             em.close();
         }
-        
+
         return Response.ok().entity(GSON.toJson("gg")).build();  //Done manually so no need for a DTO
     }
+
     @GET
     @Path("name/{name}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getMovieByDirector(@PathParam("name") String name){
+    public Response getMovieByDirector(@PathParam("name") String name) {
         Movie m = FACADE.getMovieByDirector(name);
-        
+
         return Response.ok().entity(GSON.toJson(m)).build();
     }
-         @GET
+
+    @GET
     @Path("id/{id}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getMovieByID(@PathParam("id") Long id){
+    public Response getMovieByID(@PathParam("id") Long id) {
         Movie m = FACADE.findByID(id);
         return Response.ok().entity(GSON.toJson(m)).build();
     }
-   
+
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Movie entity) {
         throw new UnsupportedOperationException();
     }
-    
+
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
