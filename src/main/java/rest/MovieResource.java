@@ -7,6 +7,7 @@ import utils.EMF_Creator;
 import facades.MovieFacade;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -48,11 +49,44 @@ public class MovieResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllMovies() {
-        List<Movie> abc = new ArrayList(FACADE.allMovie());
+        List<Movie> movies = new ArrayList(FACADE.allMovie());
         
-        return Response.ok().entity(GSON.toJson(abc)).build();  //Done manually so no need for a DTO
+        return Response.ok().entity(GSON.toJson(movies)).build();  //Done manually so no need for a DTO
     }
+    
+        @Path("create")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response createMovies() {
+        EntityManager em = EMF.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(new Movie("LotR", "Jacob"));
+            em.persist(new Movie("SW", "QQ"));
 
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        
+        return Response.ok().entity(GSON.toJson("gg")).build();  //Done manually so no need for a DTO
+    }
+    @GET
+    @Path("name/{name}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getMovieByDirector(@PathParam("name") String name){
+        Movie m = FACADE.getMovieByDirector(name);
+        
+        return Response.ok().entity(GSON.toJson(m)).build();
+    }
+         @GET
+    @Path("id/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getMovieByID(@PathParam("id") Long id){
+        Movie m = FACADE.findByID(id);
+        return Response.ok().entity(GSON.toJson(m)).build();
+    }
+   
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Movie entity) {

@@ -16,13 +16,13 @@ public class MovieFacade {
 
     private static MovieFacade instance;
     private static EntityManagerFactory emf;
-    
+
     //Private Constructor to ensure Singleton
-    private MovieFacade() {}
-    
-    
+    private MovieFacade() {
+    }
+
     /**
-     * 
+     *
      * @param _emf
      * @return an instance of this facade class.
      */
@@ -37,31 +37,32 @@ public class MovieFacade {
     private EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
-    
+
     //TODO Remove/Change this before use
-    public long getMovieCount(){
+    public long getMovieCount() {
         EntityManager em = emf.createEntityManager();
-        try{
-            long movieCount = (long)em.createQuery("SELECT COUNT(n) FROM Movie n").getSingleResult();
+        try {
+            long movieCount = (long) em.createQuery("SELECT COUNT(n) FROM Movie n").getSingleResult();
             return movieCount;
-        }finally{  
+        } finally {
             em.close();
         }
-        
+
     }
-    
-     public Movie getMovieByDirector(String director){
+
+    public Movie getMovieByDirector(String director) {
         EntityManager em = emf.createEntityManager();
-        try{
-            Query m =  em.createQuery("Select m from Movie m Where m.director = :director", Movie.class);
+        try {
+            Query m = em.createQuery("Select m from Movie m Where m.director = :director", Movie.class);
             m.setParameter("director", director);
             return (Movie) m.getSingleResult();
-        }finally{  
+        } finally {
             em.close();
         }
-        
+
     }
-        public List<Movie> allMovie() {
+
+    public List<Movie> allMovie() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Movie> query
@@ -73,8 +74,9 @@ public class MovieFacade {
             em.close();
 
         }
-    } 
-            public Movie createMovie(String movieName, String director) {
+    }
+
+    public Movie createMovie(String movieName, String director) {
         Movie m = new Movie(movieName, director);
         EntityManager em = emf.createEntityManager();
         try {
@@ -86,6 +88,15 @@ public class MovieFacade {
             em.close();
         }
     }
-     
+
+    public Movie findByID(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Movie m = em.find(Movie.class, id);
+            return m;
+        } finally {
+            em.close();
+        }
+    }
 
 }
